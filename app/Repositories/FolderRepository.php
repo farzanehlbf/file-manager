@@ -8,7 +8,8 @@ class FolderRepository implements FolderRepositoryInterface
 {
     public function paginate(int $perPage, array $filters = [])
     {
-        $query = Folder::query()->where('user_id', $filters['user_id']);
+        $query = Folder::with('tags')
+        ->where('user_id', $filters['user_id']);
 
         if (!empty($filters['name'])) {
             $query->where('name', 'like', '%'.$filters['name'].'%');
@@ -43,4 +44,17 @@ class FolderRepository implements FolderRepositoryInterface
         $folder = Folder::findOrFail($id);
         return $folder->delete();
     }
+
+    public function syncTags($folder, array $tagIds): void
+    {
+        $folder->tags()->sync($tagIds);
+    }
+
+    public function detachTag($folderId, $tagId)
+    {
+        $folder = Folder::findOrFail($folderId);
+        return $folder->tags()->detach($tagId);
+    }
+
+
 }

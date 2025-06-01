@@ -68,4 +68,42 @@ class FolderController extends Controller
 
         return response()->json(['message' => 'Folder deleted successfully.']);
     }
+
+    public function addTags(Request $request, $id)
+    {
+        $request->validate([
+            'tag_ids' => 'required|array',
+            'tag_ids.*' => 'exists:tags,id',
+        ]);
+
+        $folder = $this->folderService->findFolder($id);
+        if (!$folder || $folder->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], HttpResponse::HTTP_FORBIDDEN);
+        }
+
+        $this->folderService->syncTags($folder, $request->tag_ids);
+
+        return response()->json([
+            'message' => 'Tags synced successfully.',
+            'tags' => $folder->tags,
+        ]);
+    }
+
+    public function removeTag(Request $request, $id, $tagId)
+    {
+        $folder = $this->folderService->findFolder($id);
+        if (!$folder || $folder->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], HttpResponse::HTTP_FORBIDDEN);
+        }
+
+        $this->folderService->detachTag($id, $tagId);
+
+        return response()->json([
+            'message' => 'Tag removed successfully.',
+            'tags' => $folder->tags()->get(),
+        ]);
+    }
+
+
+
 }

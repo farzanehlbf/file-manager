@@ -36,4 +36,16 @@ class FolderService
     {
         return $this->folderRepository->find($id);
     }
+    public function syncTags($folder, array $tagIds): void
+    {
+        $this->folderRepository->syncTags($folder, $tagIds);
+    }
+
+    public function detachTag($folderId, $tagId)
+    {
+        return $this->folderRepository->detachTag($folderId, $tagId);
+    }
+
+
+
 }
