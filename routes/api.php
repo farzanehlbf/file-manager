@@ -17,4 +17,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/folders/{id}/tags', [FolderController::class, 'addTags']);
     Route::delete('/folders/{id}/tags/{tagId}', [FolderController::class, 'removeTag']);
     Route::apiResource('tags', TagController::class);
+
+    Route::prefix('files')->middleware('auth:sanctum')->group(function () {
+        Route::get('/', [FileController::class, 'index']);
+        Route::post('/upload', [FileController::class, 'upload']);
+        Route::put('/{file}', [FileController::class, 'update']);
+        Route::delete('/{file}', [FileController::class, 'destroy']);
+
+        Route::post('/{file}/move', [FileController::class, 'move']);
+        Route::post('/{file}/copy', [FileController::class, 'copy']);
+        Route::get('/{file}/download', [FileController::class, 'download']);
+        Route::post('/{file}/share', [FileController::class, 'share']);
+    });
 });
